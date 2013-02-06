@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<?teng set $.__title = 'Teng for PHP - ' ++ #example?>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>${.__title}</title>
+</head>
+
+<body>
+	<!--- Invisible comment --->
+
+	<h1>${.__title}</h1>
+
+	<dl>
+		<dt>#{language}:</dt>
+		<dd>#{lang_value}</dd>
+	</dl>
+
+	<?teng frag fragments?>
+		<?teng frag companies?>
+			<ul>
+				<?teng frag data?>
+					<li>${name}</li>
+				<?teng endfrag?>
+			</ul>
+		<?teng endfrag?>
+	<?teng endfrag?>
+
+	<?teng include file='templ/_debug.html'?>
+</body>
+</html>

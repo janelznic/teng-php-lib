@@ -1,0 +1,41 @@
+<!--- ERROR FRAGMENT --->
+<?teng if isenabled('errorfragment') || isenabled('debug')?>
+	<script type="text/javascript">
+		console.log("Cookies: " + document.cookie);
+	</script>
+
+	<div id="debug">
+		<div class="title">Error fragment:</div>
+		<div class="errFrag">
+			<?teng if isenabled('errorfragment')?>
+				<?teng frag _error?>
+					<p class="fileName">${filename}</p>
+					<p class="errMsg"><span>Line: ${line} Col: ${column}</span> ${message}</p>
+				<?teng endfrag?>
+			<?teng endif?>
+		</div>
+
+		<!--- DEBUG --->
+		<?teng if isenabled('debug')?>
+			<pre style="font:12px courier; color:blue; text-align:left;">
+				<?teng frag .debug ?>
+					${line}
+				<?teng endfrag ?>
+			</pre>
+		<?teng endif?>
+
+		<?teng if isenabled('errorfragment')?>
+			<pre style="font:12px courier; color:red; text-align:left;">
+			<?teng frag ._error?>
+				${filename} Line:${line} Col:${column} ${message}
+			<?teng endfrag?>
+			</pre>
+		<?teng endif?>
+
+		<?teng if isenabled('debug')?>
+			<pre style="font:12px courier; color:green; text-align:left;">
+				<?teng debug?>
+			</pre>
+		<?teng endif?>
+	</div>
+<?teng endif ?>
