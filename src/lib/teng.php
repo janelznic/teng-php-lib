@@ -1,7 +1,7 @@
 <?php
 /**
  * @name teng
- * @version 1.2
+ * @version 1.3
  * @description Sestavuje datovou strukturu a generuje šablony pro Template ENGine Teng
  */
 class Teng
@@ -44,23 +44,9 @@ class Teng
 	 * Projde rekurzivně datovou strukturu vícenásobných prvků a vytvoří z nich fragmenty
 	 * @param array $data Vstupní data
 	 * @param reference $frag Nadřazený fragment
-	 * @param boolean $firstIter Je instance této metody na nejvyšší úrovni v datové struktuře?
 	 */
-	function createFrags($data, $frag, $firstIter) {
+	function createFrags($data, $frag) {
 		foreach ($data as $key => $value) {
-
-			# Kořenové fragmenty
-			if ($firstIter) {
-				$nonArrs = array();
-				foreach ($value as $o => $p) {
-					if (!is_array($p)) {
-						$nonArrs[$o] = $p;
-					}
-				}
-
-				$frag = teng_add_fragment($frag, $key, $nonArrs);
-			}
-
 			if (is_array($value)) {
 
 				# Vyseparujeme zvlášť pole a ostatní hodnoty (řetězce a číselné hodnoty)
@@ -94,7 +80,11 @@ class Teng
 					}
 
 					if (!$isNotArray) {
-						teng_add_fragment($parentFrag, $k, $l);
+						if (FW::isAssoc($l)) {
+							if ($k) teng_add_fragment($parentFrag, $k, $l);
+						} else {
+							foreach ($l as $la) teng_add_fragment($parentFrag, $k, array($k => $la));
+						}
 					} else {
 						$subfrag = teng_add_fragment($parentFrag, $k, $l);
 						$this->createFrags($l, $subfrag, false);
@@ -129,8 +119,8 @@ class Teng
 
 	/**
 	 * Vygeneruje výslednou šablonu
-	 * @param array $data Vstupní data
-	 * @param reference $frag Nadřazený fragment
+	 * @param string $file Cesta k souboru
+	 * @param array $configObj Konfigurační objekt
 	 */
 	function generatePage($file, $configObj) {
 		echo(teng_page_string($this->teng, $file, $this->root, $configObj));
