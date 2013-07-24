@@ -1,7 +1,7 @@
 <?php
 /**
  * @name teng
- * @version 1.3
+ * @version 1.3-1
  * @description Sestavuje datovou strukturu a generuje šablony pro Template ENGine Teng
  */
 class Teng
@@ -86,8 +86,9 @@ class Teng
 							foreach ($l as $la) teng_add_fragment($parentFrag, $k, array($k => $la));
 						}
 					} else {
-						$subfrag = teng_add_fragment($parentFrag, $k, $l);
-						$this->createFrags($l, $subfrag, false);
+						/* Neasociativní pole nehlásíme jako chybu */
+						$subfrag = @teng_add_fragment($parentFrag, $k, $l);
+						$this->createFrags($l, $subfrag);
 					}
 				}
 			}
