@@ -1,7 +1,7 @@
 <?php
 /**
  * @name teng
- * @version 1.3-1
+ * @version 1.3.2
  * @description Sestavuje datovou strukturu a generuje šablony pro Template ENGine Teng
  */
 class Teng
@@ -38,6 +38,14 @@ class Teng
 		$this->root = "";
 		$this->setTengDataRoot($data);
 		$this->generatePage($templPath.$file, $configObj);
+	}
+
+	/**
+	 * Zjistí, zda-li je předané pole asociativní či nikoliv
+	 * @param array $arr Vstupní pole
+	 */
+	function isAssoc($arr) {
+		return array_keys($arr) !== range(0, count($arr) - 1);
 	}
 
 	/**
@@ -80,7 +88,7 @@ class Teng
 					}
 
 					if (!$isNotArray) {
-						if (FW::isAssoc($l)) {
+						if ($this->isAssoc($l)) {
 							if ($k) teng_add_fragment($parentFrag, $k, $l);
 						} else {
 							foreach ($l as $la) teng_add_fragment($parentFrag, $k, array($k => $la));
