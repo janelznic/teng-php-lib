@@ -1,31 +1,28 @@
 <?php
 /**
  * @name teng
- * @version 1.3.2
- * @description Sestavuje datovou strukturu a generuje šablony pro Template ENGine Teng
+ * @version 1.4
+ * @description Creating data structure and generating templates for TEmplate ENgine "Teng" - https://teng.sourceforge.net
  */
 class Teng
 {
 	/**
 	 * Constructor
-	 * @param array $data Výstupní data do šablon
-	 * @param array $conf Objekt s konfigurací
-	 * @param array.string $conf["templPath"] Relativní cesta k adresáři s šablonama (výchozí "templ/")
-	 * @param array.string $conf["file"] Soubor s šablonou
-	 * @param array.string $conf["content_type"] Content type pro daný soubor (výchozí "text/html")
-	 * @param array.string $conf["encoding"] Kódování souboru s šablonou (výchozí "utf-8")
-	 * @param array.string $conf["dict"] Soubor se slovníkem (výchozí "teng-cz.dict")
-	 * @param array.string $conf["config"] Soubor s konfigurací pro Teng (výchozí "teng.conf")
+	 * @param array $data Output data for templates
+	 * @param array $conf Config object
+	 * @param array.string $conf["templPath"] Relevant path for templates directory (default "templ/")
+	 * @param array.string $conf["file"] File with template
+	 * @param array.string $conf["content_type"] File content type (default "text/html")
+	 * @param array.string $conf["encoding"] File coding (default "utf-8")
+	 * @param array.string $conf["dict"] File with dictionary (default "teng-cz.dict")
+	 * @param array.string $conf["config"] File with configuration for Teng engine (default "teng.conf")
 	 */
 	function __construct($data, $conf) {
 		$this->data = $data;
 
-		# Zjednodušíme si konfigurační proměnné
 		foreach ($conf as $key => $value) $$key = $value;
 		$templPath = ($templPath ? $templPath : "templ/");
 
-		# Příprava konfiguračního objektu pro inicializaci Tengu,
-		# případné načtení výchozích hodnot
 		$configObj = array(
 			"content_type" => ($content_type ? $content_type : "text/html"),
 			"encoding" => ($encoding ? $encoding : "utf-8"),
@@ -41,23 +38,22 @@ class Teng
 	}
 
 	/**
-	 * Zjistí, zda-li je předané pole asociativní či nikoliv
-	 * @param array $arr Vstupní pole
+	 * If this array is associative?
+	 * @param array $arr Input array
 	 */
 	function isAssoc($arr) {
 		return array_keys($arr) !== range(0, count($arr) - 1);
 	}
 
 	/**
-	 * Projde rekurzivně datovou strukturu vícenásobných prvků a vytvoří z nich fragmenty
-	 * @param array $data Vstupní data
-	 * @param reference $frag Nadřazený fragment
+	 * Go recursively thru data structure of multiple elements and creates fragments
+	 * @param array $data Input data object
+	 * @param reference $frag Parent fragment
 	 */
 	function createFrags($data, $frag) {
 		foreach ($data as $key => $value) {
 			if (is_array($value)) {
 
-				# Vyseparujeme zvlášť pole a ostatní hodnoty (řetězce a číselné hodnoty)
 				$scalars = array();
 				$arrays = array();
 
@@ -70,14 +66,12 @@ class Teng
 					}
 				}
 
-				# V případě, že daná iterace obsahuje nějaké řetězce
 				if (count($scalars)) {
 					$parentFrag = teng_add_fragment($frag, "data", $scalars);
 				} else {
 					$parentFrag = $frag;
 				}
 
-				# Zde zjišťujeme, zda-li daná iterace obsahuje v sobě další pole
 				foreach ($arrays as $k => $l) {
 					$isNotArray = false;
 					foreach ($l as $m => $n) {
@@ -94,7 +88,6 @@ class Teng
 							foreach ($l as $la) teng_add_fragment($parentFrag, $k, array($k => $la));
 						}
 					} else {
-						/* Neasociativní pole nehlásíme jako chybu */
 						$subfrag = @teng_add_fragment($parentFrag, $k, $l);
 						$this->createFrags($l, $subfrag);
 					}
@@ -105,9 +98,9 @@ class Teng
 	}
 
 	/**
-	 * Projde rekurzivně datovou strukturu vícenásobných prvků a vytvoří z nich fragmenty
-	 * @param array $data Vstupní data
-	 * @param reference $frag Nadřazený fragment
+	 * Go through the recursion structure of multiple elements and creates fragments
+	 * @param array $data Input data
+	 * @param reference $frag Parent fragment
 	 */
 	function setTengDataRoot($data) {
 		$rootData = array();
@@ -127,9 +120,9 @@ class Teng
 	}
 
 	/**
-	 * Vygeneruje výslednou šablonu
-	 * @param string $file Cesta k souboru
-	 * @param array $configObj Konfigurační objekt
+	 * Generate template
+	 * @param string $file File path
+	 * @param array $configObj Config object
 	 */
 	function generatePage($file, $configObj) {
 		echo(teng_page_string($this->teng, $file, $this->root, $configObj));
